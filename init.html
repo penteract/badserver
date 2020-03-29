@@ -1,0 +1,135 @@
+<html>
+<head>
+<title> SET Version -1 </title>
+<script type="text/javascript">
+// given number, colour, fill and shape, make an svg with that pattern
+// 1  2  3
+// R  G  P
+// E  H  F
+// D  O  S
+function mkshape(n,c,f,s){
+    body=""
+    for(var i=0;i<n;i++)
+        body+=`<use y=${6*(2*i-n+1)} xlink:href="#${s}" class="${f} ${c}" />\n`
+    return body
+}
+var selected = []
+function clk(n){
+  let i=selected.indexOf(n)
+  if (i==-1){
+    selected.push(n)
+    document.getElementById(n).parentElement.classList.add("sel")
+    if(selected.length==3){
+      //TODO: check selected form a set
+      s=gamenum+"/"
+      for (x of selected)s+=x
+      d=new Date()
+      s+=d.getMinutes()+"/"+d.getSeconds()+"/"+d.getMilliseconds() // If someone waits exactly an hour to click a set in the same place, I hope it's out of cache by then.
+      fetch(s)
+      while(selected.length) clk(selected[0]); //recursion :P
+    }
+  }
+  else{
+    selected.splice(i,1)
+    document.getElementById(n).parentElement.classList.remove("sel")
+  }
+}
+function blank(n){
+  for(let i=0; i<21; i++){
+      var e = document.getElementById(String.fromCharCode(i+97)).classList
+      if (i<n) e.remove("hide");
+      else e.add("hide");
+  }
+}
+function error(){
+  alert("something went wrong")
+}
+function done(){
+  alert("GAME OVER.\n If everything is working perfectly, you should be able to refresh the page to start a new one.")
+}
+</script>
+
+<style>
+
+.sel{
+background:pink;
+}
+
+.R{
+stroke:red;
+fill:red;
+}
+.G{
+stroke:green;
+fill:green;
+}
+.P{
+stroke:blue;
+fill:blue;
+}
+.E{
+fill:none;
+}
+.R.H{fill:url(#RH)}
+.G.H{fill:url(#GH)}
+.P.H{fill:url(#PH)}
+
+.hide{display:none;}
+</style>
+
+<svg width=0 height=0>
+<defs>
+<pattern id="RH" x=0 y=0 width="2" height="4" patternTransform="rotate(22.5 0 0)" patternUnits="userSpaceOnUse">
+  <line class="R" x1="0" y1="-1" x2="0" y2="5" style="stroke-width:1.5" />
+</pattern>
+<pattern id="GH" x=0 y=0 width="2" height="4" patternTransform="rotate(22.5 0 0)" patternUnits="userSpaceOnUse">
+  <line class="G" x1="0" y1="-1" x2="0" y2="5" style="stroke-width:1.5" />
+</pattern>
+<pattern id="PH" x=0 y=0 width="2" height="4" patternTransform="rotate(22.5 0 0)" patternUnits="userSpaceOnUse">
+  <line class="P" x1="0" y1="-1" x2="0" y2="5" style="stroke-width:1.5" />
+</pattern>
+
+<polygon id="D" points="0,4 10,0 0,-4 -10,0" />
+<rect id="O" x=-10 y=-4 width=20 height=8 rx=4 />
+<!-- <path id="S" d="M-7,0 C 0,-6 0,6 7,0"  stroke="blue" stroke-width="6" stroke-linecap="round"/> -->
+<path id="S" d="M-6,-3 C 0,-5 0,-1 6,-3 S 12,1 6,3 S 0,1 -6,3 S -12,-1 -6,-3 Z" />
+<rect id="outline" x=-15 y=-23 width=30 height=46 rx=5 stroke=black fill=none />
+
+</rect>
+</defs>
+</svg>
+
+</head>
+
+<body>
+<table id=tab >
+
+<!-- <tr><td>
+<svg id="1" width=100 height=150 viewBox="-16 -24 32 48">
+<use xlink:href="#outline" />
+<g id="bill" >
+</g>
+</svg>
+</td></tr> -->
+
+</table>
+
+<script>
+let t=document.getElementById("tab");
+for(let i=0;i<3;i++){
+  let row=document.createElement("tr");
+    for(let j=0;j<7;j++){
+      let num = String.fromCharCode(97+j*3+i)
+      let cell = document.createElement("td");
+      cell.innerHTML=`<svg onclick=clk("${num}") width=100 height=150 viewBox="-16 -24 32 48"> <use xlink:href="#outline" /><g id=${num}></g> </svg>`
+      row.appendChild(cell);
+    }
+  t.appendChild(row);
+}
+</script>
+<script>
+document.getElementById("a").innerHTML=mkshape(3,"P","H","S")
+document.getElementById("t").innerHTML=mkshape( ..."3RFS" )
+document.getElementById("e").innerHTML=mkshape( ..."3RFO" )
+document.getElementById("f").innerHTML=mkshape( ..."3REO" )
+</script>
