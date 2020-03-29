@@ -1,9 +1,12 @@
 CC=gcc
 CFLAGS=-I.
 
-server: $(wildcard *.c)
-  $(CC) -o $@ server.c $(CFLAGS)
-	
+server: server.c cards.c requests.c
+  $(CC) -o $@ $^ $(CFLAGS)
+
+server_infinite: server_infinite.c cards.c requests.c
+  $(CC) -o $@ $^ $(CFLAGS)
+
 .PHONY: clean
 clean:
 	rm -f server
