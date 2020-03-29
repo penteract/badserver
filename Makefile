@@ -9,4 +9,4 @@ server_infinite: server_infinite.c cards.c requests.c
 
 .PHONY: clean
 clean:
-	rm -f server
+	rm -f server server_infinite
