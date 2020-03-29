@@ -14,6 +14,7 @@ function mkshape(n,c,f,s){
     return body
 }
 var selected = []
+var score = 0
 function clk(n){
   let i=selected.indexOf(n)
   if (i==-1){
@@ -25,7 +26,11 @@ function clk(n){
       for (x of selected)s+=x
       d=new Date()
       s+=d.getMinutes()+"/"+d.getSeconds()+"/"+d.getMilliseconds() // If someone waits exactly an hour to click a set in the same place, I hope it's out of cache by then.
-      fetch(s)
+      fetch(s).then((response)=>{
+          if(response.ok) score+=1;
+          else score-=1;
+          document.getElementById("score").innerHTML="Score: "+score
+      })
       while(selected.length) clk(selected[0]); //recursion :P
     }
   }
@@ -36,7 +41,7 @@ function clk(n){
 }
 function blank(n){
   for(let i=0; i<21; i++){
-      var e = document.getElementById(String.fromCharCode(i+97)).classList
+      var e = document.getElementById(String.fromCharCode(i+97)).parentElement.classList
       if (i<n) e.remove("hide");
       else e.add("hide");
   }
@@ -113,13 +118,13 @@ fill:none;
 </td></tr> -->
 
 </table>
-
+<div id=score >Score: Nothing</div>
 <script>
 let t=document.getElementById("tab");
 for(let i=0;i<3;i++){
   let row=document.createElement("tr");
     for(let j=0;j<7;j++){
-      let num = String.fromCharCode(97+j*3+i)
+      let num = String.fromCharCode(97+j*3+i) // lowercase letters to avoid conflicting with shapes
       let cell = document.createElement("td");
       cell.innerHTML=`<svg onclick=clk("${num}") width=100 height=150 viewBox="-16 -24 32 48"> <use xlink:href="#outline" /><g id=${num}></g> </svg>`
       row.appendChild(cell);

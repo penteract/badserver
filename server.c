@@ -272,6 +272,7 @@ void process(int sock, char* request){
         else {
             snd(sock, okmsg);
         }
+        close(sock);
     }
 /*    else {
         if (snd(sock,errmsg)) return;
