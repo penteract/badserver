@@ -1,8 +1,8 @@
-char errmsg[] = "HTTP/1.1 404 Not Found\r\nContent-Type: text/html; charset=utf18\r\nConnection: close\r\nCache-Control:no-store\r\nContent-Length: 94\r\n\r\n404 Not Found (or something else for which I can't be bothered to make a proper error message)";
+char errmsg[] = "HTTP/1.1 404 Not Found\r\nContent-Type: text/html; charset=utf18\r\nConnection: close\r\nCache-Control: no-store\r\nContent-Length: 94\r\n\r\n404 Not Found (or something else for which I can't be bothered to make a proper error message)";
 
-char okmsg[] = "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf18\r\nConnection: close\r\nCache-Control:no-store\r\nContent-Length: 0\r\n\r\n";
+char okmsg[] = "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf18\r\nConnection: close\r\nCache-Control: no-store\r\nContent-Length: 0\r\n\r\n";
 
-char headers[] = "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf8\r\nConnection: close\r\nX-Content-Type-Options: nosniff\r\nCache-Control:no-store\r\nTransfer-Encoding: Chunked\r\n\r\n";
+char headers[] = "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf8\r\nConnection: close\r\nX-Content-Type-Options: nosniff\r\nCache-Control: no-store\r\nTransfer-Encoding: Chunked\r\n\r\n";
 char initialBody[5008];
 //"xx\r\n<html><head><title>SET Version -1 </title></head><body>\r\n";
 char startscript[] = "xx\r\n<script>"
@@ -27,6 +27,9 @@ char addscript[] = "xx\r\n<script>"
 "document.getElementById(\"Y\").innerHTML=mkshape( ...\"2222\" );"
 "document.getElementById(\"Z\").innerHTML=mkshape( ...\"3333\" );"
 "</script>\r\n";
+
+char composedscript[0x1000];
+
 char* addids[3];
 char* addvals[3];
 
@@ -36,6 +39,7 @@ int snd(int sock, char* msg){
     printf("\nsending message to socket %d\n",sock);
     puts(msg);
     int c = send(sock,msg,strlen(msg),0);
+    printf("sent: %d\n",c);
     if(c<0){perror("send failed"); close(sock); return -1;}
     return 0;
 }

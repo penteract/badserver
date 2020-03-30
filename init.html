@@ -8,7 +8,7 @@
 // E  H  F
 // D  O  S
 function mkshape(n,c,f,s){
-    body=""
+    var body=""
     for(var i=0;i<n;i++)
         body+=`<use y=${6*(2*i-n+1)} xlink:href="#${s}" class="${f} ${c}" />\n`
     return body
@@ -22,9 +22,9 @@ function clk(n){
     document.getElementById(n).parentElement.classList.add("sel")
     if(selected.length==3){
       //TODO: check selected form a set
-      s=gamenum+"/"
-      for (x of selected)s+=x
-      d=new Date()
+      let s=gamenum+"/"
+      for (let x of selected)s+=x
+      let d=new Date()
       s+=d.getMinutes()+"/"+d.getSeconds()+"/"+d.getMilliseconds() // If someone waits exactly an hour to click a set in the same place, I hope it's out of cache by then.
       fetch(s).then((response)=>{
           if(response.ok) score+=1;
