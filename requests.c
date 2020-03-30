@@ -23,9 +23,9 @@ char donescript[] = "xx\r\n<script>"
 "done();"
 "</script>\r\n";
 char addscript[] = "xx\r\n<script>"
-"document.getElementById(\"X\").innerHTML=mkshape( ...\"1111\" );"
-"document.getElementById(\"Y\").innerHTML=mkshape( ...\"2222\" );"
-"document.getElementById(\"Z\").innerHTML=mkshape( ...\"3333\" );"
+"setpic(\"X\", \"1111\"); "
+"setpic(\"Y\", \"2222\"); "
+"setpic(\"Z\", \"3333\"); "
 "</script>\r\n";
 
 char composedscript[0x1000];
