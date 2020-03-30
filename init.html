@@ -13,6 +13,11 @@ function mkshape(n,c,f,s){
         body+=`<use y=${6*(2*i-n+1)} xlink:href="#${s}" class="${f} ${c}" />\n`
     return body
 }
+function assign(a,ncfs){
+    document.getElementById("a").innerHTML=mkshape(...ncfs);
+}
+
+
 var selected = []
 var score = 0
 function clk(n){
@@ -41,9 +46,15 @@ function clk(n){
 }
 function blank(n){
   for(let i=0; i<21; i++){
-      var e = document.getElementById(String.fromCharCode(i+97)).parentElement.classList
-      if (i<n) e.remove("hide");
-      else e.add("hide");
+    var e = document.getElementById(String.fromCharCode(i+97)).parentElement.classList
+    if (i<n) e.remove("hide");
+    else e.add("hide");
+  }
+  for(let i of selected){
+    if (i.charCodeAt(0)-97 >= n){
+      selected = []
+      break
+    }
   }
 }
 function error(){
@@ -61,16 +72,16 @@ background:pink;
 }
 
 .R{
-stroke:red;
-fill:red;
+stroke:black;
+fill:black;
 }
 .G{
-stroke:green;
-fill:green;
+stroke:yellow;
+fill:yellow;
 }
 .P{
-stroke:blue;
-fill:blue;
+stroke:magenta;
+fill:magenta;
 }
 .E{
 fill:none;
