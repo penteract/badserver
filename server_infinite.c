@@ -133,6 +133,7 @@ int send_all(game* g, char* msg){
 int send_init(int sock){
     if(snd(sock,headers)) return -1;
     if(snd(sock,initialBody)) return -1;
+    return 0;
 }
 
 int new_player(int sock){
@@ -213,6 +214,7 @@ int play_move(unsigned int idx, int* set){
     }
     else{
         if(g->dealt>78){
+            // TODO: either include the cards in the set when shuffling, or come up with a good justification for why not (note that they are included when shuffled in add_cards )
             shuffle_from(g,g->out);
             g->dealt=g->out;
         }

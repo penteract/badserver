@@ -135,6 +135,7 @@ int start_game(int idx){
 int send_init(int sock){
     if(snd(sock,headers)) return -1;
     if(snd(sock,initialBody)) return -1;
+    return 0;
 }
 
 int new_player(int sock){
