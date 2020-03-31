@@ -1,4 +1,7 @@
 // https://www.binarytides.com/socket-programming-c-linux-tutorial/
+// https://stackoverflow.com/a/16154717/1779797
+#include <netinet/in.h>
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<sys/socket.h>

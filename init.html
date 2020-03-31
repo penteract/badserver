@@ -16,7 +16,7 @@ function mkshape(n,c,f,s){
 
 function deselect(){
   for(let x of selected){
-    document.getElementById(x).classList.remove("sel");
+    document.getElementById(x).parentElement.classList.remove("sel");
   }
   selected=[]
 }
