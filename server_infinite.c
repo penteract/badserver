@@ -8,20 +8,9 @@
 #include <stdbool.h>
 #include<signal.h>
 
-#include<requests.c>
-
 #include<cards.c>
 
 #define MAXCONNS 500
-
-#define SWP(a,b) \
-    if ((a)!=(b)){\
-        a ^= b;\
-        b ^= a;\
-        a ^= b;\
-    }
-
-
 struct game{
     //sockets TODO: make this an array of players
     int players[MAXCONNS];
@@ -32,8 +21,17 @@ struct game{
     int dealt; //number of cards dealt
     int out; //number of cards currently in play
 };
-
 typedef struct game game;
+
+#include<requests.c>
+
+#define SWP(a,b) \
+    if ((a)!=(b)){\
+        a ^= b;\
+        b ^= a;\
+        a ^= b;\
+    }
+
 
 // How not to make a webserver
 
@@ -207,7 +205,7 @@ int play_move(unsigned int idx, int* set){
         // If set[i] contains one of [out-3 .. out), this will overwrite deck[set[i]]
         // before it matters
         for(int i=2; i>=0; i--){
-            SWP(g->deck[set[i]], g->deck[out - i]);
+            SWP(g->deck[set[i]], g->deck[out-i-1]);
         }
         g->out -=3;
         out-=3;
@@ -223,27 +221,22 @@ int play_move(unsigned int idx, int* set){
             g->dealt++;
         }
     }
+    startcompose();
     //modify addscript
-    for(int j=0;j<3;j++){
-        *(addids[j])= 'a'+set[j];
-        toStr(addvals[j], g->deck[set[j]]);
-    }
-    send_all(g, addscript);
+    addadd(g, set);
     //See if more need to be dealt
 
     bool finished = add_cards(g);
     printf("out: %d; dealt: %d g1: %X",g->out,g->dealt, g->deck[1]);
     for(int i=out;i< g->out;i+=3){
         //modify addscript
-        for(int j=0;j<3;j++){
-            *(addids[j])= 'a'+i+j;
-            toStr(addvals[j], g->deck[i+j]);
-        }
-        send_all(g, addscript);
+        addadd(g, nats+i);
     }
-    sprintf(blanknum,"%2d",g->out);
-    blanknum[2]=' ';
-    send_all(g, blankscript);
+    addblank(g->out);
+    //sprintf(blanknum,"%2d",g->out);
+    //blanknum[2]=' ';
+    endcompose();
+    send_all(g, composedscript);
     printf("done? %d,%d",finished,g->dealt);
     return 0;
 }

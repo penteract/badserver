@@ -27,11 +27,39 @@ char addscript[] = "xx\r\n<script>"
 "setpic(\"Y\", \"2222\"); "
 "setpic(\"Z\", \"3333\"); "
 "</script>\r\n";
-
-char composedscript[0x1000];
-
 char* addids[3];
 char* addvals[3];
+
+char composedscript[0x1000];
+char* composeptr;
+
+void startcompose(){
+    strcpy(composedscript,"xxx\r\n");
+    composeptr=composedscript+5;
+}
+
+int nats[21]= {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
+void addadd(game* g, int* set){
+    for(int j=0;j<3;j++){
+        *(addids[j])= 'a'+set[j];
+        toStr(addvals[j], g->deck[set[j]]);
+    }
+    int len = strlen(addscript)-6;
+    memcpy(composeptr, addscript+4, len);
+    composeptr+=len;
+}
+void addblank(int n){
+    sprintf(blanknum,"%2d", n);
+    blanknum[2]=' ';
+    int len = strlen(blankscript)-6;
+    memcpy(composeptr, blankscript+4, len);
+    composeptr+=len;
+}
+void endcompose(){
+    sprintf(composedscript,"%03x", (composeptr-composedscript)-5);
+    composedscript[3]='\r';
+    sprintf(composeptr,"\r\n");
+}
 
 // char msg5[] = "05\r\nxxxxx\r\n";
 
@@ -55,7 +83,7 @@ int mkChunk(char* str){
     }
     str[0] = tohexdig(l/16);
     str[1] = tohexdig(l%16);
-    //puts(str);
+    puts(str);
     return 0;
 }
 int setup(){

@@ -198,7 +198,7 @@ int play_move(unsigned int idx, int* set){
         // If set[i] contains one of [out-3 .. out), this will overwrite deck[set[i]]
         // before it matters
         for(int i=2; i>=0; i--){
-            g->deck[set[i]] = g->deck[out - i];
+            g->deck[set[i]] = g->deck[out-1 - i];
         }
         g->out -=3;
         out-=3;
