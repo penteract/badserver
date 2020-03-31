@@ -13,6 +13,14 @@ function mkshape(n,c,f,s){
     body+=`<use y=${6*(2*i-n+1)} xlink:href="#${s}" class="${f} ${c}" />\n`
   return body
 }
+
+function deselect(){
+  for(let x of selected){
+    document.getElementById(x).classList.remove("sel");
+  }
+  selected=[]
+}
+
 function setpic(a,ncfs){
   var e = document.getElementById(a)
   e.innerHTML=mkshape(...ncfs);
@@ -23,7 +31,7 @@ function setpic(a,ncfs){
   svg.classList.add("glow")
   for (let x of selected){
     if (x==a) {
-      selected=[]
+      desetlect()
       break
     }
   }
@@ -64,7 +72,7 @@ function blank(n){
   }
   for(let i of selected){
     if (i.charCodeAt(0)-97 >= n){
-      selected = []
+      deselect()
       break
     }
   }
