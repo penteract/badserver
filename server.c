@@ -9,8 +9,7 @@
 #include<string.h>
 #include<unistd.h>
 #include <stdbool.h>
-
-#include<requests.c>
+#include<signal.h>
 
 #include<cards.c>
 
@@ -22,9 +21,11 @@ struct game{
     card deck[81];
     int dealt; //number of cards dealt
     int out; //number of cards currently in play
-}; 
+};
 
 typedef struct game game;
+
+#include<requests.c>
 
 // How not to make a webserver
 
@@ -104,10 +105,12 @@ void init_deck(struct game* g){
 #define SENDALL(msg) \
  if (snd(g->p1,msg)){\
         snd(g->p2,errscript);\
+        remove_game(idx);\
         return -1;\
     }\
     if (snd(g->p2,msg)){\
         snd(g->p1,errscript);\
+        remove_game(idx);\
         return -1;\
     }
 
@@ -232,6 +235,7 @@ int play_move(unsigned int idx, int* set){
     SENDALL(blankscript)
     if (finished){
         SENDALL(donescript)
+        remove_game(idx);
     }
     printf("done? %d,%d",finished,g->dealt);
     return 0;
@@ -251,12 +255,15 @@ void process(int sock, char* request){
     b = b && *(request++) == 'T';
     b = b && *(request++) == ' '; //TODO: check if RFC allows more/other whitespace
     b = b && *(request++) == '/';
+    if(memcmp(request,"duel/",5)==0){request+=5;}
     int c;
     CHECK(!b)
     if (memcmp(request," ",1)==0){
+        puts("np");
         new_player(sock);
     }
     else { // Assume it is a move
+        puts("mv");
         unsigned int gnum=0;
         while(*request>='0' && *request<='9'){
             gnum = gnum*10 + *request - '0';
@@ -305,11 +312,12 @@ int main(int argc , char *argv[])
     //https://stackoverflow.com/questions/24194961/how-do-i-use-setsockoptso-reuseaddr
     //TODO: remove when done debugging
     int enable = 1;
+    signal(SIGPIPE, SIG_IGN);
     setsockopt(socket_desc, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)); 
     struct sockaddr_in server, client;
     server.sin_addr.s_addr = INADDR_ANY;
     server.sin_family = AF_INET;
-    server.sin_port = htons( 8080 );
+    server.sin_port = htons( 8081 );
     int c = bind(socket_desc , (struct sockaddr *) &server, sizeof(server));
     if (c<0){
         perror("bind failed");
