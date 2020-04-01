@@ -141,6 +141,12 @@ int start_game(int idx){
 int send_init(int sock){
     if(snd(sock,headers)) return -1;
     if(snd(sock,initialBody)) return -1;
+    if (snd(sock,lorem)){
+        return -1;
+    }
+    if (snd(sock,lorem)){
+        return -1;
+    }
     return 0;
 }
 
@@ -148,12 +154,6 @@ int new_player(int sock){
     // New player trying to start a game
     if (games[curr].p1!=0 && games[curr].p2==0){
         if(send_init(sock)){
-            return -3;
-        }
-        if (snd(sock,lorem)){
-            return -3;
-        }
-        if (snd(sock,lorem)){
             return -3;
         }
         games[curr].p2=sock;
