@@ -150,6 +150,12 @@ int new_player(int sock){
         if(send_init(sock)){
             return -3;
         }
+        if (snd(sock,lorem)){
+            return -3;
+        }
+        if (snd(sock,lorem)){
+            return -3;
+        }
         games[curr].p2=sock;
         int old=curr;
         if(start_game(old)){
