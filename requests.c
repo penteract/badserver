@@ -15,10 +15,10 @@ char blankscript[] = "xx\r\n<script>"
 "</script>\r\n";
 char* blanknum;
 
-char lorem[] = "xx\r\nlorem ipsum dolor sit amet<br />\r\n"
+char lorem[] = "xx\r\n<p class=hide> lorem ipsum dolor sit amet<br />\r\n"
 "I can't remember the rest, but it doesn't matter too much<br />\r\n"
 "Sending data to test if anything shows<br />\r\n"
-"Lets add some more characters to make it go faster<br />\r\n\r\n";
+"Lets add some more characters to make it go faster<br /></p>\r\n\r\n";
 
 
 char errscript[] = "xx\r\n<script>"

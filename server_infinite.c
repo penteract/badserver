@@ -144,7 +144,6 @@ int new_player(int sock){
         remove_conn(g,idx);
         return -1;
     }
-    /*
     if (snd(sock,lorem)){
         remove_conn(g,idx);
         return -1;
@@ -152,7 +151,7 @@ int new_player(int sock){
     if (snd(sock,lorem)){
         remove_conn(g,idx);
         return -1;
-    }*/
+    }
     
     // modify startscript
     sprintf(gamenum,"%4d",0);
