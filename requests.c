@@ -15,6 +15,11 @@ char blankscript[] = "xx\r\n<script>"
 "</script>\r\n";
 char* blanknum;
 
+char lorem[] = "xx\r\nlorem ipsum dolor sit amet<br />\r\n"
+"I can't remember the rest, but it doesn't matter too much<br />\r\n"
+"Sending data to test if anything shows<br />\r\n"
+"Lets add some more characters to make it go faster<br />\r\n\r\n";
+
 
 char errscript[] = "xx\r\n<script>"
 "error();"
@@ -101,6 +106,7 @@ int setup(){
     x = x || mkChunk(blankscript);
     x = x || mkChunk(addscript);
     x = x || mkChunk(donescript);
+    x = x || mkChunk(lorem);
     if (x) return x;
     FILE * file = fopen("init.html","r");
     if (file==0){return -2;}
