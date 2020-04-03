@@ -167,7 +167,15 @@ function done(){
 </table>
 
 <div id=score >Score: Nothing</div>
+
 <script>
+//p=document.getElementById("score");
+listen = (num) => function(event){
+//console.log(num);
+//p.innerHTML+=num;
+clk(num);
+event.preventDefault();
+}
 let t=document.getElementById("tab");
 for(let i=0;i<3;i++){
   let row=document.createElement("tr");
@@ -175,6 +183,7 @@ for(let i=0;i<3;i++){
       let num = String.fromCharCode(97+j*3+i) // lowercase letters to avoid conflicting with shapes
       let cell = document.createElement("td");
       cell.innerHTML=`<svg class=card onclick=clk("${num}") viewBox="-15 -23 30 46"> <g id=${num}></g> </svg>`
+      cell.children[0].addEventListener("touchstart",listen(num),true)
       row.appendChild(cell);
     }
   t.appendChild(row);
