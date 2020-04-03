@@ -126,13 +126,6 @@ int send_all(game* g, char* msg){
 int send_init(int sock){
     if(snd(sock,headers)) return -1;
     if(snd(sock,initialBody)) return -1;
-/*    if (snd(sock,lorem)){
-        return -1;
-    }*/
-    sleep(10);
-    if (snd(sock,lorem)){
-        return -1;
-    }
     return 0;
 }
 
@@ -258,6 +251,7 @@ void process(int sock, char* request){
     b = b && *(request++) == 'T';
     b = b && *(request++) == ' '; //TODO: check if RFC allows more/other whitespace
     b = b && *(request++) == '/';
+    if(memcmp(request,"inf/",4)==0){request+=4;}
     int c;
     CHECK(!b)
     if (memcmp(request," ",1)==0){

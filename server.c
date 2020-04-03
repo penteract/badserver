@@ -4,9 +4,17 @@
 
 #include<headers.c>
 
-char errmsg[] = "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain; charset=UTF-8\r\nConnection: close\r\nContent-Length: 94\r\n\r\n404 Not Found (or something else for which I can't be bothered to make a proper error message)";
+char errmsg[] = "HTTP/1.1 404 Not Found\r\n"
+"Content-Type: text/plain; charset=UTF-8\r\n"
+"Connection: close\r\n"
+"Content-Length: 94\r\n"
+"\r\n"
+"404 Not Found (or something else for which I can't be bothered to make a proper error message)";
 
-char headers[] = "HTTP/1.1 200 OK\r\nContent-Type: text/XXXX ; charset=UTF-8\r\nConnection: close\r\n\r\nContent-Length:Y     \r\n\r\n";
+char headers[] = "HTTP/1.1 200 OK\r\n"
+"Content-Type: text/XXXX ; charset=UTF-8\r\n"
+"Connection: close\r\n"
+"Content-Length:Y     \r\n\r\n";
 
 char* typeinheader;
 char* leninheader;
