@@ -288,4 +288,12 @@ void process(int sock, char* request){
     // send(new_socket , message , strlen(message) , 0);
 }
 
+#define SETUP \
+    if (setup()){\
+        puts("Setup failed");\
+        return 1;\
+    }\
+    init_deck(&gm);
+
+
 #include<main.c>

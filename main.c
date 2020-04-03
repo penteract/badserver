@@ -2,10 +2,14 @@
 
 int main(int argc , char *argv[])
 {
+    #ifdef SETUP 
+    SETUP
+    #else
     if (setup()){
         puts("Setup failed");
         return 1;
     }
+    #endif
     int socket_desc, new_socket, k;
     socket_desc = socket(AF_INET , SOCK_STREAM , 0);
     if (socket_desc == -1)
