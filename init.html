@@ -114,7 +114,9 @@ function clk(n){
     document.getElementById(n).parentElement.classList.remove("sel")
   }
 }
+var shown = 21
 function blank(n){
+  shown=n
   for(let i=0; i<21; i++){
     var e = document.getElementById(String.fromCharCode(i+97)).parentElement.classList
     if (i<n) e.remove("hide");
@@ -188,6 +190,13 @@ for(let i=0;i<3;i++){
     }
   t.appendChild(row);
 }
+var keymap = "qazwsxedcrfvtgbyhnujm" // keys for uk layout
+document.addEventListener('keypress', (event) => {
+  const keyName = event.key;
+  let n = keymap.indexOf(keyName);
+  if(n==-1 || n>=shown) return;
+  clk(String.fromCharCode(97+n));
+}, false);
 </script>
 <script>
 setpic("a","3PHS")
@@ -197,6 +206,23 @@ document.getElementById("f").innerHTML=mkshape( ..."3GEO" )
 setpic("b","3REO" )
 setpic("d","3PEO" )
 </script>
+<div style="width:450px">
+<p>
+To play, select cards that form a set.
+3 cards form a set  if, for each of the 4 properties: number, shape, color, and fill,
+the cards are all different in that property or all the same in that property.
+</p>
+<p>
+For example: 3 solid red ovals, 2 hashed red ovals, and 1 empty red oval.
+<svg class=card viewBox="-15 -23 30 46" style="scale:0.25;margin:-50px -40px -65px -40px"> <script>document.write(mkshape(..."3RFO"))</script> </svg></span>
+<svg class=card viewBox="-15 -23 30 46" style="scale:0.25;margin:-50px -40px -65px -40px"> <script>document.write(mkshape(..."2RHO"))</script> </svg></span>
+<svg class=card viewBox="-15 -23 30 46" style="scale:0.25;margin:-50px -40px -65px -40px"> <script>document.write(mkshape(..."1REO"))</script> </svg></span>
+</p>
+<p>
+Three cards cannot form a set if 2 of them share a property, but the third does not.
+For example, there are no sets with 2 blue cards and 1 red card, or 2 solid cards and 1 empty card.
+</p>
+</div>
 <p id=p1>
 lorem ipsum dolor sit amet<br />
 I can't remember the rest, but it doesn't matter too much<br />
