@@ -1,15 +1,8 @@
-// https://www.binarytides.com/socket-programming-c-linux-tutorial/
-// https://stackoverflow.com/a/16154717/1779797
-#include <netinet/in.h>
+// Pair up players who visit this server into 2 Player games.
 
-#include<stdio.h>
-#include<stdlib.h>
-#include<sys/socket.h>
-#include<arpa/inet.h>
-#include<string.h>
-#include<unistd.h>
-#include <stdbool.h>
-#include<signal.h>
+#define PORT 8081
+
+#include<headers.c>
 
 #include<cards.c>
 #include<requests.c>

@@ -1,6 +1,9 @@
-// https://www.binarytides.com/socket-programming-c-linux-tutorial/
-// https://stackoverflow.com/a/16154717/1779797
+// A single never stopping game with up to MAXCONNS players.
+
+#define PORT 8082
+
 #include<headers.c>
+
 #include<cards.c>
 #include<requests.c>
 

@@ -1,3 +1,4 @@
+// https://www.binarytides.com/socket-programming-c-linux-tutorial/
 
 int main(int argc , char *argv[])
 {
@@ -19,7 +20,7 @@ int main(int argc , char *argv[])
     struct sockaddr_in server, client;
     server.sin_addr.s_addr = INADDR_ANY;
     server.sin_family = AF_INET;
-    server.sin_port = htons( 8081 );
+    server.sin_port = htons( PORT );
     int c = bind(socket_desc , (struct sockaddr *) &server, sizeof(server));
     if (c<0){
         perror("bind failed");

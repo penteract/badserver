@@ -1,7 +1,10 @@
-// https://www.binarytides.com/socket-programming-c-linux-tutorial/
+//Static files
+
+#define PORT 8080
+
 #include<headers.c>
 
-char errmsg[] = "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain; charset=UTF-8\r\nConnection: close\r\nCache-Control: no-store\r\nContent-Length: 94\r\n\r\n404 Not Found (or something else for which I can't be bothered to make a proper error message)";
+char errmsg[] = "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain; charset=UTF-8\r\nConnection: close\r\nContent-Length: 94\r\n\r\n404 Not Found (or something else for which I can't be bothered to make a proper error message)";
 
 char headers[] = "HTTP/1.1 200 OK\r\nContent-Type: text/XXXX ; charset=UTF-8\r\nConnection: close\r\n\r\nContent-Length:Y     \r\n\r\n";
 
