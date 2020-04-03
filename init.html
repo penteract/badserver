@@ -138,7 +138,7 @@ function done(){
 </script>
 
 
-
+<!-- who says I can't put an svg in the head-->
 <svg width=0 height=0 >
 <defs>
 <pattern id="RH" x=0 y=0 width="2" height="4" patternTransform="rotate(22.5 0 0)" patternUnits="userSpaceOnUse">
@@ -153,12 +153,8 @@ function done(){
 
 <polygon id="D" points="0,4 10,0 0,-4 -10,0" />
 <rect id="O" x=-10 y=-4 width=20 height=8 rx=4 />
-<path id="S" d="M-6,-3 C 0,-5 0,-1 6,-3 S 12,1 6,3 S 0,1 -6,3 S -12,-1 -6,-3 Z" />
-<!--
-<rect id="outline" x=-15 y=-23 width=30 height=46 rx=5 stroke=black fill=none />
--->
+<path id="S" d="M-6,-3 C 0,-5 0,0 6,-3 S 12,1 6,3 S 0,0 -6,3 S -12,-1 -6,-3 Z" />
 
-</rect>
 </defs>
 </svg>
 
@@ -171,10 +167,7 @@ function done(){
 <div id=score >Score: Nothing</div>
 
 <script>
-//p=document.getElementById("score");
 listen = (num) => function(event){
-//console.log(num);
-//p.innerHTML+=num;
 clk(num);
 event.preventDefault();
 }
