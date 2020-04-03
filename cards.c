@@ -38,3 +38,4 @@ void toStr(char* s, card c){
         c>>=2;
     }
 }
+#define GAME

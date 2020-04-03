@@ -86,6 +86,9 @@ function done(){
 }
 </script>
 
+
+<link href="styles.css" rel="stylesheet" type="text/css" title="Default Style">
+<link href="traditional.css" rel="alternate stylesheet" type="text/css" title="Traditional Colours">
 <style>
 
 svg.card{
@@ -109,18 +112,6 @@ to{box-shadow: none;}
 background:pink;
 }
 
-.R{
-stroke:black;
-fill:black;
-}
-.G{
-stroke:magenta;
-fill:magenta;
-}
-.P{
-stroke:orange;
-fill:orange;
-}
 .E{
 fill:none;
 }
@@ -158,16 +149,8 @@ fill:none;
 
 <body>
 <table id=tab >
-
-<!-- <tr><td>
-<svg id="1" width=100 height=150 viewBox="-16 -24 32 48">
-<use xlink:href="#outline" />
-<g id="bill" >
-</g>
-</svg>
-</td></tr> -->
-
 </table>
+
 <div id=score >Score: Nothing</div>
 <script>
 let t=document.getElementById("tab");
@@ -183,8 +166,22 @@ for(let i=0;i<3;i++){
 }
 </script>
 <script>
-document.getElementById("a").innerHTML=mkshape(3,"P","H","S")
-document.getElementById("t").innerHTML=mkshape( ..."3RFS" )
+setpic("a","3PHS")
+document.getElementById("t").innerHTML=mkshape( ..."3GFS" )
 document.getElementById("e").innerHTML=mkshape( ..."3RFO" )
-document.getElementById("f").innerHTML=mkshape( ..."3REO" )
+document.getElementById("f").innerHTML=mkshape( ..."3GEO" )
+setpic("b","3REO" )
+setpic("d","3PEO" )
 </script>
+<p id=p1>
+lorem ipsum dolor sit amet<br />
+I can't remember the rest, but it doesn't matter too much<br />
+Sending data to test if anything shows<br />
+Lets add some more characters to make it go faster<br />
+</p>
+<p id=p2>
+lorem ipsum dolor sit amet<br />
+I can't remember the rest, but it doesn't matter too much<br />
+Sending data to test if anything shows<br />
+Lets add some more characters to make it go faster<br />
+</p>

@@ -1,10 +1,15 @@
 CC=gcc
 CFLAGS=-I.
+COMMON=cards.c requests.c headers.c main.c
 
-server: server.c cards.c requests.c
+.PHONY: all
+all: server_duel server_infinite
+
+
+server_duel: server_duel.c $(COMMON)
 	$(CC) -o $@ $< $(CFLAGS)
 
-server_infinite: server_infinite.c cards.c requests.c
+server_infinite: server_infinite.c $(COMMON)
 	$(CC) -o $@ $< $(CFLAGS)
 
 .PHONY: clean
