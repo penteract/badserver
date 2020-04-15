@@ -16,4 +16,4 @@ server_infinite: server_infinite.c $(COMMON)
 
 .PHONY: clean
 clean:
-	rm -f server server_infinite
+	rm -f server server_infinite server_duel

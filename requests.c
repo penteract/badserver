@@ -17,6 +17,8 @@ char headers[] = "HTTP/1.1 200 OK\r\n"
 "Cache-Control: no-cache\r\n"
 "Transfer-Encoding: Chunked\r\n\r\n";
 
+
+
 char initialBody[10008];
 //"xx\r\n<html><head><title>SET Version -1 </title></head><body>\r\n";
 char startscript[] = "xx\r\n<script>"
@@ -89,10 +91,10 @@ void endcompose(){
 // char msg5[] = "05\r\nxxxxx\r\n";
 
 int snd(int sock, char* msg){
-    printf("\nsending message to socket %d\n",sock);
-    puts(msg);
+    //printf("\nsending message to socket %d\n",sock);
+    //puts(msg);
     int c = send(sock,msg,strlen(msg),0);
-    printf("sent: %d\n",c);
+    //printf("sent: %d\n",c);
     if(c<0){perror("send failed"); close(sock); return -1;}
     return 0;
 }
@@ -140,4 +142,14 @@ int setup(){
     initialBody[7+k]='\n';
     fclose(file);
     return 0;
+}
+
+
+// string a starts with the string b
+bool startswith(char* a, char* b){
+    while(*a==*b){
+        if(*(b++)==0) return true;
+        a++;
+    }
+    return (*b)==0;
 }

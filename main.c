@@ -41,15 +41,15 @@ int main(int argc , char *argv[])
     puts("Accepted");*/
     
 
-    char reply[101];
+    char request[101];
     while (new_socket>0){
-        puts("Accepted");
-        c = recv(new_socket, reply, 100, 0);
+        // puts("Accepted");
+        c = recv(new_socket, request, 100, 0);
         if(c>0){
-            reply[c]=0; //for parser safety, not just for printing convenience
+            request[c]=0; //for parser safety, not just for printing convenience
             printf("count: %d\n",c);
-            puts(reply);
-            process(new_socket,reply);
+            puts(request);
+            process(new_socket,request);
         } else {
             perror("recv failed");
             close(new_socket);

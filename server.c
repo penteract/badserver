@@ -3,6 +3,7 @@
 #define PORT 8080
 
 #include<headers.c>
+#include<utils.c>
 
 char errmsg[] = "HTTP/1.1 404 Not Found\r\n"
 "Content-Type: text/plain; charset=UTF-8\r\n"
@@ -15,7 +16,6 @@ char headers[] = "HTTP/1.1 200 OK\r\n"
 "Content-Type: text/XXXX ; charset=UTF-8\r\n"
 "Connection: close\r\n"
 "Content-Length:Y     \r\n\r\n";
-
 char* typeinheader;
 char* leninheader;
 
@@ -41,6 +41,7 @@ char* fileData[NUMFILES];
 int fileSize[NUMFILES];
 
 int setup(){
+    redirectdest = strchr(redirect, 'X');
     typeinheader = strchr(headers, 'X');
     leninheader = strchr(typeinheader, 'Y');
     char* filled = pageData;
@@ -85,21 +86,22 @@ int sendError(int sock){
     return 0;
 }
 
+
 // Binary search on a list of size 3 :)
 int bs(char* query){
     int l=0;
     int r=NUMFILES;
-    // Invariant dat is in (l..r]
+    // Invariant: query starts with a string in [files[l]..files[r])
+               // or l=0 and query is smaller than files[l]
     while(r>l+1){
         int m = (l+r)/2;
-        //puts(query);
-        //printf("%d,%d\n",m,strcmp(query,files[m]));
         if (strcmp(query,files[m]) >0) l=m;
         else r=m;
     }
-    if (memcmp(query,files[l],strlen(files[l]))==0) return l;
+    if (startswith(query,files[l])) return l;
     return -1;
 }
+
 
 
 void process(int sock, char* request){
@@ -109,11 +111,17 @@ void process(int sock, char* request){
     b = b && *(request++) == 'T';
     b = b && *(request++) == ' '; //TODO: check if RFC allows more/other whitespace
     b = b && *(request++) == '/';
-    //if(memcmp(request,"duel/",5)==0){request+=5;}
     if(!b){
         sendError(sock);
         return;
     }
+#define TRAILING(s) \
+    if(startswith(request,#s" ")){\
+        sendRedirect(sock, #s"/\r\n\r\n");\
+        return;\
+    }
+    TRAILING(duel)
+    TRAILING(inf)
     int c = 0; //index of "index.html"
     if (*request != ' ') c=bs(request);
     if (c==-1){
