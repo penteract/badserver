@@ -214,7 +214,7 @@ int play_move(unsigned int idx, char* pname, card* set){
     puts("not broken");
     if(!isTriple(set[0],set[1],set[2])){
         g->scores[p]-=1;
-        setscore(g,0);
+        setscore((game*)(((int*)g) + p), 0);
         send_all(g, scorescript);
         return 3;
     }
@@ -254,7 +254,7 @@ int play_move(unsigned int idx, char* pname, card* set){
         addadd(g->deck, nats+i);
     }
     addblank(g->out);
-    addscore(g, 0);
+    addscore((game*)(((int*)g) + p), 0);
     endcompose();
     send_all(g, composedscript);
     printf("done? %d,%d",finished,g->dealt);
