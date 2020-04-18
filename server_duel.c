@@ -4,6 +4,7 @@
 
 #include<headers.c>
 
+#define REDIRECTTYPE "307 Temporary Redirect"
 #include<utils.c>
 #include<cards.c>
 
@@ -282,6 +283,10 @@ int play_move(unsigned int idx, char* pname, card* set){
     }
 
 void process(int sock, char* request){
+    if(memcmp(request,"GET ",4)==0){
+        sendRedirect(sock,"/\r\n\r\n");
+        return;
+    }
     bool b = true;
     b = b && *(request++) == 'P';
     b = b && *(request++) == 'O';

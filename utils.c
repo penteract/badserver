@@ -11,7 +11,7 @@ bool startswith(char* a, char* b){
     return (*b)==0;
 }
 
-char redirect[] = "HTTP/1.1 308 Permanent Redirect\r\n"
+char redirect[] = "HTTP/1.1 " REDIRECTTYPE "\r\n"
 "Content-Length: 0\r\n"
 "Connection: close\r\n"
 "Location: XXXXX XXXX/\r\n\r\n";

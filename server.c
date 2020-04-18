@@ -3,6 +3,7 @@
 #define PORT 8080
 
 #include<headers.c>
+#define REDIRECTTYPE "308 Permanent Redirect"
 #include<utils.c>
 
 char errmsg[] = "HTTP/1.1 404 Not Found\r\n"
