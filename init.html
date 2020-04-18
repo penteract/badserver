@@ -1,7 +1,7 @@
 <html lang="en">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8;charset=utf-8">
-<title> SET Version -1 </title>
+<title> SET Version 0 </title>
 <style>
 .R{
 stroke:#BB5566;
@@ -71,9 +71,12 @@ function deselect(){
   selected=[]
 }
 
+cards = {}
+
 function setpic(a,ncfs){
   var e = document.getElementById(a)
   e.innerHTML=mkshape(...ncfs);
+  cards[a]=ncfs
   var svg = e.parentElement
   // https://css-tricks.com/restart-css-animation/
   svg.classList.remove("glow")
@@ -97,11 +100,11 @@ function clk(n){
     document.getElementById(n).parentElement.classList.add("sel")
     if(selected.length==3){
       //TODO: check selected form a set
-      let s=gamenum+"/"
-      for (let x of selected)s+=x
+      let s="../"+gamenum+"/"+name+"/"
+      for (let x of selected)s+=cards[x]
       let d=new Date()
       s+=d.getMinutes()+"/"+d.getSeconds()+"/"+d.getMilliseconds() // If someone waits exactly an hour to click a set in the same place, I hope it's out of cache by then.
-      fetch(s).then((response)=>{
+      fetch(s,{method:"POST"}).then((response)=>{
           if(response.ok) score+=1;
           else score-=1;
           document.getElementById("score").innerHTML="Score: "+score
@@ -131,6 +134,80 @@ function blank(n){
 }
 function error(){
   alert("something went wrong")
+}
+
+scores={} // scores[n+name]=[score,row]
+byscore=[] // sorted list of keys
+//There are easier ways of doing this, but this one pretends to be efficient
+// It took some debugging
+function setScore(n,name,score){
+  var k=n+name
+//  console.log(k,name,score)
+  var stab=document.getElementById("scores")
+  if(scores[k]){
+    scores[k][1].childNodes[1].innerHTML=""+score
+    var oldscore=scores[k][0]
+    scores[k][0]=score
+  }
+  else{
+    let row = document.createElement("tr")
+    row.innerHTML=`<td>${name}</td><td>${score}</td>`
+    scores[k]=[score,row]
+    stab.appendChild(row)
+    byscore.push(k)
+    var oldscore=-1e9
+  }
+  if(byscore.length>1 && score!=oldscore){
+    //Binary search to find where to put the score
+    var l=byscore[0]==k|0; var r=byscore.length
+    if(scores[byscore[l]][0]<score){
+      scores[byscore[l]][1].insertAdjacentElement(
+          "beforebegin", scores[k][1])
+      if(l==0){
+        var t=byscore[l]
+        while(t!=k){
+          var x=byscore[++l]
+          byscore[l]=t
+          t=x
+        }
+        byscore[0]=t
+      }
+      return
+    }
+    else while(l+1<r){
+      var m=Math.floor((l+r)/2)
+      if (byscore[m]==k){
+        if(m+1==r){
+          r-=1; continue
+        }
+        else m+=1
+      }
+      if(scores[byscore[m]][0]>=score) l=m;
+      else r=m;
+    }
+    scores[byscore[l]][1].insertAdjacentElement(
+        "afterend",scores[k][1])
+    var i=l
+/*    s=i+" ["
+    for(x of byscore){s+=x+" "+scores[x][0]+", "}
+    console.log(s)*/
+    if (scores[byscore[l]][0]>oldscore){
+      var t=byscore[++i]
+      while(t!=k){
+        var x=byscore[++i]
+        byscore[i]=t
+        t=x
+      }
+      byscore[l+1]=t
+    }
+    else if(l+1>=byscore.length || byscore[l+1]!=k){
+      do {
+        var t=byscore[i-1]
+        byscore[i-1]=byscore[i--];
+      } while(t!=k)
+      byscore[l]=t
+    }
+  }
 }
 function done(){
   alert("GAME OVER.\n If everything is working perfectly, you should be able to refresh the page to start a new one.")
@@ -162,6 +239,8 @@ function done(){
 
 <body>
 <table id=tab >
+</table>
+<table id=scores>
 </table>
 
 <div id=score >Score: Nothing</div>
@@ -217,12 +296,6 @@ For example, there are no sets with 2 blue cards and 1 red card, or 2 solid card
 </p>
 </div>
 <p id=p1>
-lorem ipsum dolor sit amet<br />
-I can't remember the rest, but it doesn't matter too much<br />
-Sending data to test if anything shows<br />
-Lets add some more characters to make it go faster<br />
-</p>
-<p id=p2>
 lorem ipsum dolor sit amet<br />
 I can't remember the rest, but it doesn't matter too much<br />
 Sending data to test if anything shows<br />

@@ -4,15 +4,15 @@
 
 #include<headers.c>
 
+#include<utils.c>
 #include<cards.c>
-#include<requests.c>
 
 #define MAXCONNS 500
 struct game{
-    //sockets TODO: make this an array of players
     int players[MAXCONNS];
-    int curr; // number of connections
-    //Invariant: players[i] is nonzero for exactly 'live' indicies i
+    int scores[MAXCONNS];
+    char names[MAXCONNS][NAMELENGTH];
+    int curr; // number of live connections
     
     card deck[81];
     int dealt; //number of cards dealt
@@ -20,6 +20,7 @@ struct game{
 };
 typedef struct game game;
 
+#include<requests.c>
 
 #define SWP(a,b) \
     if ((a)!=(b)){\
@@ -35,9 +36,15 @@ typedef struct game game;
 struct game gm;
 
 
-int new_conn(game* g, int sock){
+int new_conn(game* g, int sock, char* name){
     if (g->curr>=MAXCONNS) return -1;
+
+    g->scores[g->curr]=0;
+    for(int i=0;i<NAMELENGTH;i++){
+        g->names[g->curr][i]=name[i];
+    }
     g->players[g->curr++]=sock;
+
     return (g->curr-1);
 }
 
@@ -46,7 +53,12 @@ int remove_conn(game* g, int idx){
         puts("Bad connection removal");
         return -1;
     }
-    g->players[idx]=g->players[gm.curr-1];
+    close(g->players[idx]);
+    g->players[idx]=g->players[g->curr-1];
+    g->scores[idx]=g->scores[g->curr-1];
+    for(int i=0;i<NAMELENGTH;i++){
+        g->names[idx][i]=g->names[g->curr-1][i];
+    }
     g->curr-=1;
     return 0;
 }
@@ -65,7 +77,6 @@ void shuffle_from(game* g, int keep){
             g->deck[j]^=g->deck[i];
         }
     }
-
 }
 
 bool add_3(game* g){
@@ -129,46 +140,36 @@ int send_init(int sock){
     return 0;
 }
 
-int new_player(int sock){
+int new_player(int sock, char* name){
     game* g = &gm;
-    int idx = new_conn(g,sock);
+    int pl = new_conn(g, sock, name);
     if (send_init(sock)){
-        remove_conn(g,idx);
+        remove_conn(g,pl);
         return -1;
     }
-    
+
     // modify startscript
     sprintf(gamenum,"%4d",0);
     gamenum[4]=' ';
+    memcpy(startname,name,NAMELENGTH);
     if (snd(sock, startscript)){
-        remove_conn(g,idx);
+        remove_conn(g,pl);
         return -1;
     }
-    //modify blankscript
-    sprintf(blanknum,"%2d",g->out);
-    blanknum[2]=' ';
-    if (snd(sock, blankscript)){
-        remove_conn(g,idx);
-        return -1;
+
+    startcompose();
+    addblank(g->out);
+    for(int i=0;i< g->out;i+=3){
+        addadd(g->deck, nats+i);
     }
-    
-    for(int i=0; i< g->out; i+=3){
-        //modify addscript
-        for(int j=0;j<3;j++){
-            *(addids[j])= 'a'+i+j;
-            toStr(addvals[j], g->deck[i+j]);
-        }
-        if (snd(sock, addscript)){
-            remove_conn(g,idx);
-            return -1;
-        }
+    endcompose();
+    if (snd(sock, composedscript)){
+        remove_conn(g,pl);
+        return -1;
     }
     return 0;
 }
 
-//Errors: 1 - not a game in progress
-//        2 - not 3 distinct dealt cards (should never come from a 0-latency well behaved client)
-//        3 - not a set
 #define SWPGT(a,b) \
     if ((a)>(b)){\
         a ^= b;\
@@ -176,32 +177,56 @@ int new_player(int sock){
         a ^= b;\
     }
 
-int play_move(unsigned int idx, int* set){
+// TODO(not worth the effort unless MAXCONNS is increased):
+//   find a better method than linear search
+int find_player(game* g , char* name){
+    for(int p=0; p < g->curr; p++){
+        if (memcmp(name,g->names[p],NAMELENGTH)==0) return p;
+    }
+    return -1;
+}
+
+//Errors: 1 - not a game in progress
+//        2 - not 3 distinct dealt cards (should never come from a 0-latency well behaved client)
+//        3 - not a set
+//        4 - not a known player
+int play_move(unsigned int idx, char* pname, card* set){
     printf("game %d, set %d %d %d\n",idx,set[0],set[1],set[2]);
     struct game* g = &gm;
-    char s[] = "XXXX XXXX XXXX";
-    for(int i=0;i<3;i++) toStr(s+i*5,g->deck[set[i]]);
-    puts(s);
-    printf("game %d, set %d %d %d\n",idx,g->deck[set[0]],g->deck[set[1]],g->deck[set[2]]);
-    //sort set
-    SWPGT(set[0],set[1])
-    SWPGT(set[1],set[2])
-    SWPGT(set[0],set[1])
-    if(set[0]==set[1] || set[1]==set[2])
+    int p = find_player(g,pname);
+    if(p<0) return 4;
+    // Turn cards into indicies
+    int idxs[3];
+    for(int i=0;i<3;i++){
+        card* c = memchr(g->deck,set[i],g->out);
+        if (c==0) return 4;
+        idxs[i]=c-g->deck;
+    }
+    //sort indicies
+    SWPGT(idxs[0],idxs[1])
+    SWPGT(idxs[1],idxs[2])
+    SWPGT(idxs[0],idxs[1])
+    if(idxs[0]==idxs[1] || idxs[1]==idxs[2])
         return 2;
-    if( set[2]>= g->out)
+    if( idxs[2]>= g->out)
         return 2;
     puts("not broken");
-    if(!isTriple(g->deck[set[0]],g->deck[set[1]],g->deck[set[2]]))
+    if(!isTriple(set[0],set[1],set[2])){
+        g->scores[p]-=1;
+        setscore(g,p);
+        send_all(g, scorescript);
         return 3;
+    }
     puts("Valid set");
     // We now have a good request
+    g->scores[p]+=1;
+
     int out = g->out;
     if(out > 12){
         // If set[i] contains one of [out-3 .. out), this will overwrite deck[set[i]]
         // before it matters
         for(int i=2; i>=0; i--){
-            SWP(g->deck[set[i]], g->deck[out-i-1]);
+            SWP(g->deck[idxs[i]], g->deck[out-i-1]);
         }
         g->out -=3;
         out-=3;
@@ -213,24 +238,22 @@ int play_move(unsigned int idx, int* set){
             g->dealt=g->out;
         }
         for(int i=0;i<3;i++){
-            SWP(g->deck[set[i]], g->deck[g->dealt])
+            SWP(g->deck[idxs[i]], g->deck[g->dealt])
             g->dealt++;
         }
     }
+
     startcompose();
-    //modify addscript
-    addadd(g->deck, set);
+    addadd(g->deck, idxs);
     //See if more need to be dealt
 
     bool finished = add_cards(g);
     printf("out: %d; dealt: %d g1: %X",g->out,g->dealt, g->deck[1]);
     for(int i=out;i< g->out;i+=3){
-        //modify addscript
         addadd(g->deck, nats+i);
     }
     addblank(g->out);
-    //sprintf(blanknum,"%2d",g->out);
-    //blanknum[2]=' ';
+    addscore(g, p);
     endcompose();
     send_all(g, composedscript);
     printf("done? %d,%d",finished,g->dealt);
@@ -246,31 +269,38 @@ int play_move(unsigned int idx, int* set){
 
 void process(int sock, char* request){
     bool b = true;
-    b = b && *(request++) == 'G';
-    b = b && *(request++) == 'E';
+    b = b && *(request++) == 'P';
+    b = b && *(request++) == 'O';
+    b = b && *(request++) == 'S';
     b = b && *(request++) == 'T';
-    b = b && *(request++) == ' '; //TODO: check if RFC allows more/other whitespace
+    b = b && *(request++) == ' '; //TODO: RFC allows more/other whitespace
     b = b && *(request++) == '/';
     if(memcmp(request,"inf/",4)==0){request+=4;}
     int c;
     CHECK(!b)
-    if (memcmp(request," ",1)==0){
-        new_player(sock);
+    // Expected: join/<NAME>
+    if (memcmp(request,"join/",5)==0){
+        request+=5;
+        puts("np");
+        char name[5] = "    ";
+        readname(&request,name);
+        new_player(sock,name);
     }
+    // Expected: <gamenum>/<name>/<NCSF1><NCSF2><NCSF3>
     else { // Assume it is a move
-        unsigned int gnum=0;
-        while(*request>='0' && *request<='9'){
-            gnum = gnum*10 + *request - '0';
-            request++;
-        }
+        puts("mv");
+        unsigned int gnum=readnat(&request);
         CHECK(*(request++) != '/')
-        int sel[3];
+        char name[5] = "    ";
+        readname(&request,name);
+        CHECK(*(request++) != '/')
+        card sel[3];
         for(int i=0; i<3; i++){
-            sel[i]=*(request++)-'a';
-            CHECK(sel[i]<0 || sel[i]>=21)
+            sel[i]=fromStr(&request);
+            CHECK(sel[i]==0)
         }
         //request is well formed
-        int res = play_move(gnum,sel);
+        int res = play_move(gnum,name,sel);
         if(res){
             snd(sock, errmsg);
         }
@@ -283,9 +313,7 @@ void process(int sock, char* request){
         if (snd(sock,errmsg)) return;
         close(sock);
     }*/
-    
     return;
-    // send(new_socket , message , strlen(message) , 0);
 }
 
 #define SETUP \

@@ -38,4 +38,19 @@ void toStr(char* s, card c){
         c>>=2;
     }
 }
+
+//return value of 0 means bad parse
+card fromStr(char** s){
+    card c = 0;
+    char* n = names;
+    for(int i=0;i<4;i++){
+        c>>=2;
+        for(int j=1;j<4;j++){
+            if(*(n++)==**s) c+=(j<<6);
+        }
+        if(!(c&0xC0))return 0;
+        (*s)++;
+    }
+    return c;
+}
 #define GAME

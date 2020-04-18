@@ -17,37 +17,28 @@ char headers[] = "HTTP/1.1 200 OK\r\n"
 "Cache-Control: no-cache\r\n"
 "Transfer-Encoding: Chunked\r\n\r\n";
 
-
-
 char initialBody[10008];
 //"xx\r\n<html><head><title>SET Version -1 </title></head><body>\r\n";
+
 char startscript[] = "xx\r\n<script>"
-"gamenum=NNNN ;"
+"gamenum=XXXX ;"
+"name=\"NNNN\".split(\" \")[0];"
 "</script>\r\n";
 char* gamenum;
+char* startname;
 
 char blankscript[] = "xx\r\n<script>"
 "blank(NN ) ;"
 "</script>\r\n";
 char* blanknum;
 
-char lorem[] = "xx\r\n<script>"
-"document.getElementById(\"p1\").classList.add(\"hide\");"
-"document.getElementById(\"p2\").classList.add(\"hide\");"
-"</script>\r\n\r\n";
-
-/*  "xx\r\n lorem ipsum dolor sit amet<br />\r\n"
-"I can't remember the rest, but it doesn't matter too much<br />\r\n"
-"Sending data to test if anything shows<br />\r\n"
-"Lets add some more characters to make it go faster<br />\r\n\r\n";*/
-
-
-char errscript[] = "xx\r\n<script>"
-"error();"
+char scorescript[] = "xx\r\n<script>"
+"setScore(PPPP ,\"NNNN\",MMMM );"
 "</script>\r\n";
-char donescript[] = "xx\r\n<script>"
-"done();"
-"</script>\r\n";
+char* scorepl;
+char* scorename;
+char* scoreval;
+
 char addscript[] = "xx\r\n<script>"
 "setpic(\"X\", \"1111\"); "
 "setpic(\"Y\", \"2222\"); "
@@ -55,6 +46,25 @@ char addscript[] = "xx\r\n<script>"
 "</script>\r\n";
 char* addids[3];
 char* addvals[3];
+
+char errscript[] = "xx\r\n<script>"
+"error();"
+"</script>\r\n";
+char donescript[] = "xx\r\n<script>"
+"done();"
+"</script>\r\n"
+"\0\r\n\r\n";
+
+/*char lorem[] = "xx\r\n<script>"
+"document.getElementById(\"p1\").classList.add(\"hide\");"
+"document.getElementById(\"p2\").classList.add(\"hide\");"
+"</script>\r\n\r\n";
+
+  "xx\r\n lorem ipsum dolor sit amet<br />\r\n"
+"I can't remember the rest, but it doesn't matter too much<br />\r\n"
+"Sending data to test if anything shows<br />\r\n"
+"Lets add some more characters to make it go faster<br />\r\n\r\n";*/
+
 
 #ifdef GAME
 char composedscript[0x1000];
@@ -82,6 +92,19 @@ void addblank(int n){
     memcpy(composeptr, blankscript+4, len);
     composeptr+=len;
 }
+void setscore(game* g, int p){
+    sprintf(scorepl,"%4d",p);
+    scorepl[4]=' ';
+    memcpy(scorename,g->names[p],4);
+    sprintf(scoreval,"%4d",g->scores[p]);
+    scoreval[4]=' ';
+}
+void addscore(game* g, int p){
+    setscore(g,p);
+    int len = strlen(scorescript)-6;
+    memcpy(composeptr, scorescript+4, len);
+    composeptr+=len;
+}
 void endcompose(){
     sprintf(composedscript,"%03x", (composeptr-composedscript)-5);
     composedscript[3]='\r';
@@ -91,10 +114,10 @@ void endcompose(){
 // char msg5[] = "05\r\nxxxxx\r\n";
 
 int snd(int sock, char* msg){
-    //printf("\nsending message to socket %d\n",sock);
-    //puts(msg);
+    printf("\nsending message to socket %d\n",sock);
+    puts(msg);
     int c = send(sock,msg,strlen(msg),0);
-    //printf("sent: %d\n",c);
+    printf("sent: %d\n",c);
     if(c<0){perror("send failed"); close(sock); return -1;}
     return 0;
 }
@@ -114,8 +137,13 @@ int mkChunk(char* str){
     return 0;
 }
 int setup(){
+    redirectdest = strchr(redirect, 'X');
     blanknum = strchr(blankscript, 'N');
-    gamenum = strchr(startscript, 'N');
+    scorepl = strchr(scorescript, 'P');
+    scorename = strchr(scorescript, 'N');
+    scoreval = strchr(scorescript, 'M');
+    gamenum = strchr(startscript, 'X');
+    startname = strchr(startscript, 'N');
     addids[0] = strchr(addscript, 'X');
     addids[1] = strchr(addscript, 'Y');
     addids[2] = strchr(addscript, 'Z');
@@ -128,7 +156,9 @@ int setup(){
     x = x || mkChunk(blankscript);
     x = x || mkChunk(addscript);
     x = x || mkChunk(donescript);
-    x = x || mkChunk(lorem);
+    donescript[strlen(donescript)]='0';
+    x = x || mkChunk(scorescript);
+    //x = x || mkChunk(lorem);
     if (x) return x;
     FILE * file = fopen("init.html","r");
     if (file==0){return -2;}
@@ -145,11 +175,3 @@ int setup(){
 }
 
 
-// string a starts with the string b
-bool startswith(char* a, char* b){
-    while(*a==*b){
-        if(*(b++)==0) return true;
-        a++;
-    }
-    return (*b)==0;
-}

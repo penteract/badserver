@@ -1,11 +1,18 @@
 <html>
 <head><title>Play Set</title></head>
 <body>
-<ul>
-<li><a href="/inf/">Infinite</a></li>
-<li><a href="/duel/">Two Player</a></li>
-</ul>
-<input type=text />
-<button>Enter Name</button>
+<input id=name type=text placeholder="Name" /><br />
+<button onclick="start('inf')">Infinite</button>
+<button onclick="start('duel')">Duel</button>
+<form method=POST />
+<script>
+form = document.createElement("form");
+form.method="POST";
+document.body.appendChild(form);
+function start(path){
+    form.action=""+path+"/join/"+document.getElementById("name").value
+    form.submit()
+}
+</script>
 </body>
 </html>
