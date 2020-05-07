@@ -159,7 +159,7 @@ function setScore(n,name,score){
   }
   if(byscore.length>1 && score!=oldscore){
     //Binary search to find where to put the score
-    var l=byscore[0]==k|0; var r=byscore.length
+    var l=byscore[0]==(k|0); var r=byscore.length
     if(scores[byscore[l]][0]<score){
       scores[byscore[l]][1].insertAdjacentElement(
           "beforebegin", scores[k][1])
@@ -272,9 +272,11 @@ document.addEventListener('keypress', (event) => {
 </script>
 <script>
 setpic("a","3PHS")
+document.getElementById("a").innerText="Waiting for players"
 document.getElementById("t").innerHTML=mkshape( ..."3GFS" )
 document.getElementById("e").innerHTML=mkshape( ..."3RFO" )
-document.getElementById("f").innerHTML=mkshape( ..."3GEO" )
+document.getElementById("f").innerHTML=mkshape("3","G","E","O" )
+console.log(..."lgtm test")
 setpic("b","3REO" )
 setpic("d","3PEO" )
 </script>

@@ -80,7 +80,7 @@ void shuffle_from(game* g, int keep){
     }
 }
 
-bool add_3(game* g){
+void add_3(game* g){
     if(g->dealt>78){
         shuffle_from(g,g->out);
         g->dealt=g->out;
@@ -126,7 +126,7 @@ void init_deck(struct game* g){
     add_cards(g);
 }
 
-int send_all(game* g, char* msg){
+void send_all(game* g, char* msg){
     for(int i=0; i< g->curr;i++){
         while(snd(g->players[i],msg)){
             remove_conn(g, i);
