@@ -24,6 +24,14 @@ width: 100px;
 height: 150px;
 transition: box-shadow 1s;
 }
+svg.scaledcard{
+border-radius: 3.75px;
+border: 0.75px solid black;
+margin: 1.25px;
+margin-bottom: -12.5px;
+width: 25px;
+height: 37.5px;
+}
 .glow{
 animation: 2s glw;
 }
@@ -288,9 +296,9 @@ the cards are all different in that property or all the same in that property.
 </p>
 <p>
 For example: 3 solid red ovals, 2 hashed red ovals, and 1 empty red oval.
-<svg class=card viewBox="-15 -23 30 46" style="scale:0.25;margin:-50px -40px -65px -40px"> <script>document.write(mkshape(..."3RFO"))</script> </svg></span>
-<svg class=card viewBox="-15 -23 30 46" style="scale:0.25;margin:-50px -40px -65px -40px"> <script>document.write(mkshape(..."2RHO"))</script> </svg></span>
-<svg class=card viewBox="-15 -23 30 46" style="scale:0.25;margin:-50px -40px -65px -40px"> <script>document.write(mkshape(..."1REO"))</script> </svg></span>
+<span><svg class=scaledcard viewBox="-15 -23 30 46"> <script>document.write(mkshape(..."3RFO"))</script> </svg></span>
+<span><svg class=scaledcard viewBox="-15 -23 30 46"> <script>document.write(mkshape(..."2RHO"))</script> </svg></span>
+<span><svg class=scaledcard viewBox="-15 -23 30 46"> <script>document.write(mkshape(..."1REO"))</script> </svg></span>
 </p>
 <p>
 Three cards cannot form a set if 2 of them share a property, but the third does not.
