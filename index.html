@@ -9,9 +9,16 @@
 form = document.createElement("form");
 form.method="POST";
 document.body.appendChild(form);
+allowed = "0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
 function start(path){
-    form.action=""+path+"/join/"+document.getElementById("name").value
-    form.submit()
+  var n = document.getElementById("name").value
+  if (n.length==0 || allowed.indexOf(n[0])==-1){
+    n = ""
+    for(var x=0;x<4;x++)
+      n+=allowed[Math.floor(Math.random()*allowed.length)]
+  }
+  form.action=""+path+"/join/"+n
+  form.submit()
 }
 </script>
 </body>
